@@ -23,8 +23,8 @@ Plug 'hashivim/vim-vagrant'         " Vagrant file syntax highligh
 "Plug 'vim-ruby/vim-ruby'            " auto 'end' adding
 Plug 'tpope/vim-endwise'            " auto 'end' adding
 Plug 'Raimondi/delimitMate'         " automatic closing of quotes, parenthesis, brackets, etc.
-Plug 'vimwiki/vimwiki'              " try wiki
 Plug 'itchyny/vim-cursorword'       " just select word under cursor
+Plug 'ecomba/vim-ruby-refactoring'  " extract to a method
 
 " Themes
 Plug 'morhetz/gruvbox'
@@ -245,7 +245,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   nmap <silent> <DOWN> :cclose<CR> " close
 
   " Search and Replace
-  nmap <Leader>r :%s//gc<Left><Left><Left>
+  nmap <Leader>R :%s//gc<Left><Left><Left>
 " }
 
 
@@ -284,6 +284,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   " Ctrl {
     " Open file menu
     nnoremap <Leader>n :CtrlP<CR>
+    let g:ctrlp_map = '<Leader>n'
     " Open buffer menu
     nnoremap <Leader>b :CtrlPBuffer<CR>
     " Open most recently used files
@@ -292,6 +293,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
     nnoremap <leader>. :CtrlPTag<cr>
 
     let g:ctrlp_working_path_mode = 0
+    let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
   " }
 
   " Git {
@@ -334,6 +336,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   "command! MakeTags !ctags -R -f ./.git/tags .
   command! MakeTags !ctags -R --languages=ruby --exclude=.git --exclude=log . $(bundle list --paths)
 
+  autocmd FileType javascript set formatprg=prettier\ --stdin
 
 
 

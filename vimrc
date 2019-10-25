@@ -1,35 +1,58 @@
 call plug#begin('~/.vim/plugged')
 
-Plug 'scrooloose/nerdtree'          " project tree
-Plug 'ctrlpvim/ctrlp.vim'           " ctrl-p file search
-Plug 'tpope/vim-fugitive'           " git tool
-Plug 'vim-airline/vim-airline'      " nice status line
-Plug 'tpope/vim-surround'           " working with ",), ]
 Plug 'tpope/vim-sensible'           " better vim view and more
 Plug 'tpope/vim-repeat'             " repeat command for all stuff
-Plug 'tpope/vim-unimpaired'         " shotcuts with [,]
-Plug 'slim-template/vim-slim'       " slim syntax highlighting
 Plug 'janko-m/vim-test'             " test plugin
-Plug 'benmills/vimux'               " tmux for vim
-"Plug 'scrooloose/syntastic'        " syntax checker
-Plug 'airblade/vim-gitgutter'       " git signs
-Plug 'gregsexton/gitv'              " git tree and history
 Plug 'joequery/Stupid-EasyMotion'   " moving in the line
 Plug 'vim-scripts/BufOnly.vim'      " close all buffers
-Plug 'gorkunov/smartgf.vim'         " lookup methods
 Plug 'scrooloose/nerdcommenter'     " comment text
-Plug 'tpope/vim-bundler'            " For auto tags generating (gem-ctags is needeed)
-Plug 'hashivim/vim-vagrant'         " Vagrant file syntax highligh
-"Plug 'vim-ruby/vim-ruby'            " auto 'end' adding
-Plug 'tpope/vim-endwise'            " auto 'end' adding
-Plug 'Raimondi/delimitMate'         " automatic closing of quotes, parenthesis, brackets, etc.
 Plug 'itchyny/vim-cursorword'       " just select word under cursor
-Plug 'ecomba/vim-ruby-refactoring'  " extract to a method
+Plug 'w0rp/ale'                     " formatting
+" todo coc for lsp
+" corbon for ruby
 
-" Themes
+" Git
+Plug 'tpope/vim-fugitive'           " git tool
+Plug 'airblade/vim-gitgutter'       " git signs
+Plug 'gregsexton/gitv'              " git tree and history
+
+" UI, Themes
+Plug 'Yggdroot/indentLine'
 Plug 'morhetz/gruvbox'
 Plug 'nanotech/jellybeans.vim'
+Plug 'scrooloose/nerdtree'          " project tree
+Plug 'vim-airline/vim-airline'      " nice status line
 
+" Language Syntax
+Plug 'elixir-editors/vim-elixir'
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'slim-template/vim-slim'       " slim syntax highlighting
+Plug 'hashivim/vim-vagrant'         " Vagrant file syntax highligh
+Plug 'tomlion/vim-solidity'         " Solidity language syntax
+Plug 'pangloss/vim-javascript'      " Js highlight and indent (support .es6 extention)
+Plug 'chemzqm/vim-jsx-improve', { 'for': 'javascript' } " jsx syntax
+Plug 'jparise/vim-graphql'           " GraphQL
+
+" General syntax
+Plug 'tpope/vim-surround'           " working with ",), ]
+Plug 'tpope/vim-unimpaired'         " shotcuts with [,]
+Plug 'tpope/vim-endwise'            " auto 'end' adding
+Plug 'Raimondi/delimitMate'         " automatic closing of quotes, parenthesis, brackets, etc.
+Plug 'jiangmiao/auto-pairs'          " paired [({})]
+
+" Search
+Plug 'ctrlpvim/ctrlp.vim'           " ctrl-p file search
+Plug 'gorkunov/smartgf.vim'         " lookup methods
+Plug 'tpope/vim-bundler'            " For auto tags generating (gem-ctags is needeed)
+Plug 'junegunn/fzf.vim'
+Plug 'dyng/ctrlsf.vim'              " search in files
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy search file
+
+" Archive
+" Plug 'benmills/vimux'               " tmux for vim
+" Plug 'scrooloose/syntastic'        " syntax checker
+" Plug 'tpope/vim-liquid'             " shopify templates
 call plug#end()
 
 
@@ -69,6 +92,7 @@ call plug#end()
   set ttimeoutlen=100
 
   set ignorecase
+  set autoread
 
   " mouse
   " Send more characters for redraws
@@ -125,6 +149,7 @@ call plug#end()
 
   set nowrap              " switch text wrapping off
   set synmaxcol=170       " fix slow vim with long lines
+  set noeol               " don't play with a file's end
 
   " {
     " Tell Vim which characters to show for expanded TABs,
@@ -152,6 +177,8 @@ nnoremap k gk
 
 
 let mapleader="\<SPACE>"
+" copy filepath
+nnoremap <silent> <Leader>gg :let @*=expand("%:p")<cr>
 
 " Cursor sign in different modes
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
@@ -161,9 +188,12 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 " Options {
 
   " Colorscheme options.
-  colorscheme gruvbox
+  " colorscheme gruvbox
+  colorscheme jellybeans
+  let g:jellybeans_overrides = {
+  \    'background': { 'guibg': '000000' },
+  \}
   syntax enable
-  "set background=light
 
   " ================ Persistent Undo ==================
   " Keep undo history across sessions, by storing in file.
@@ -216,7 +246,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   map <F5> :so  ~/.vimrc<Enter>
 
   " select all
-  nmap <C-a> ggVG
+  nmap <Leader>a ggVG
 
   " upper/lower word
   " nmap <leader>u mQviwU`Q
@@ -246,7 +276,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
   " Search and Replace
   nmap <Leader>R :%s//gc<Left><Left><Left>
-" }
+  " }
 
 
 
@@ -279,12 +309,13 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   " NERD TREE {
     nmap <silent> <leader>1 :NERDTreeToggle<CR>
     nmap <C-\> :NERDTreeFind<CR>
+    let g:NERDSpaceDelims = 1
   " }
 
   " Ctrl {
     " Open file menu
-    nnoremap <Leader>n :CtrlP<CR>
-    let g:ctrlp_map = '<Leader>n'
+    "nnoremap <Leader>n :CtrlP<CR>
+    "let g:ctrlp_map = '<Leader>n'
     " Open buffer menu
     nnoremap <Leader>b :CtrlPBuffer<CR>
     " Open most recently used files
@@ -294,6 +325,10 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
     let g:ctrlp_working_path_mode = 0
     let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
+  " }
+
+  " GitGutter {
+    nmap <leader>hu <Plug>(GitGutterUndoHunk)
   " }
 
   " Git {
@@ -312,20 +347,57 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   " let g:auto_save_silent = 1
 
   " vim test
-  let g:test#ruby#minitest#executable = 'm'
+  let g:test#ruby#minitest#executable = 'rspec'
   nmap <silent> <leader>T :TestNearest<CR>
   nmap <silent> <leader><C-t> :TestFile<CR>
   nmap <silent> <leader>l :TestLast<CR>
 
   " make test commands execute using dispatch.vim
   let test#strategy = "basic"
-  let test#ruby#rspec#executable = 'heroku local:run -e .env.test bundle exec rspec'
+  "let test#ruby#rspec#executable = 'heroku local:run -e .env.test bundle exec rspec'
 
+  " fzf setup
+  nmap <leader><tab> <plug>(fzf-maps-n)
+  xmap <leader><tab> <plug>(fzf-maps-x)
+  omap <leader><tab> <plug>(fzf-maps-o)
+
+  nmap <Leader>n :FZF<CR>
+  " install fd to use .gitignore
+
+
+  " ctrlsf params
+  let g:ctrlsf_default_view_mode = 'compact'
+  let g:ctrlsf_ignore_dir = ['public', 'node_modules']
+
+  nmap     <C-A>f <Plug>CtrlSFPrompt
+  vmap     <C-A>f <Plug>CtrlSFVwordPath
+  vmap     <C-A>F <Plug>CtrlSFVwordExec
+  nmap     <C-A>N <Plug>CtrlSFCwordPath
+  nmap     <C-A>n <Plug>CtrlSFCwordExec
+  nmap     <C-A>p <Plug>CtrlSFPwordPath
+  nnoremap <C-A>o :CtrlSFOpen<CR>
+  nnoremap <C-A>t :CtrlSFToggle<CR>
+  inoremap <C-A>t <Esc>:CtrlSFToggle<CR>
 " }}}
 
+  " Ale
+  let g:ale_completion_enabled = 0
+  let g:ale_fix_on_save = 1
+  let g:ale_linters = {}
+  let g:ale_linters.scss = ['stylelint']
+  let g:ale_linters.css = ['stylelint']
+  let g:ale_linters.javascript = ['eslint']
+  let g:ale_linters.elixir = []
 
+  let g:ale_fixers = {}
+  let g:ale_fixers.javascript = ['prettier']
+  let g:ale_fixers.typescript = ['tslint']
+  let g:ale_fixers.scss = ['stylelint']
+  let g:ale_fixers.css = ['prettier']
+  let g:ale_fixers.ruby = ['rubocop']
+  let g:ale_fixers.elixir = ['mix_format']
 
-
+  let g:ale_linter_aliases = {'typescriptreact': 'typescript'}
 
 
 " Commands {{{
@@ -338,32 +410,6 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
   autocmd FileType javascript set formatprg=prettier\ --stdin
 
-
-
-
-
-  " {{{ The Silver Searcher
-    if executable('ag')
-      " Use ag over grep
-      set grepprg=ag\ --nogroup\ --nocolor
-
-      " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-      let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-      "let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
-
-      " ag is fast enough that CtrlP doesn't need to cache
-      let g:ctrlp_use_caching = 0
-    endif
-
-    " bind \ (backward slash) to grep shortcut
-    command! -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
-
-    nnoremap <leader>f :Ag<SPACE>
-
-    " bind K to grep word under cursor
-    nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
-
-  " }}}
 
   " Remove trailing spaces before saving text files
   " http://vim.wikia.com/wiki/Remove_trailing_spaces

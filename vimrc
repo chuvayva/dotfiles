@@ -6,10 +6,28 @@ Plug 'janko-m/vim-test'             " test plugin
 Plug 'joequery/Stupid-EasyMotion'   " moving in the line
 Plug 'vim-scripts/BufOnly.vim'      " close all buffers
 Plug 'scrooloose/nerdcommenter'     " comment text
-Plug 'itchyny/vim-cursorword'       " just select word under cursor
-Plug 'w0rp/ale'                     " formatting
-" todo coc for lsp
-" corbon for ruby
+" Plug 'itchyny/vim-cursorword'       " just select word under cursor
+Plug 'neoclide/coc.nvim', {'branch': 'release'} " autocomplete, linters, fixers, lsp, tabnine
+let g:coc_global_extensions = [
+      \ 'coc-tsserver',
+      \ 'coc-html',
+      \ 'coc-lists',
+      \ 'coc-sh',
+      \ 'coc-css',
+      \ 'coc-stylelint',
+      \ 'coc-vimlsp',
+      \ 'coc-elixir',
+      \ 'coc-json',
+      \ 'coc-eslint',
+      \ 'coc-jest',
+      \ 'coc-solargraph',
+      \ 'coc-yaml',
+      \ 'coc-highlight',
+      \ 'coc-docker',
+      \ 'coc-diagnostic',
+      \ 'coc-snippets',
+      \ 'coc-tabnine',
+      \]
 
 " Git
 Plug 'tpope/vim-fugitive'           " git tool
@@ -24,38 +42,27 @@ Plug 'scrooloose/nerdtree'          " project tree
 Plug 'vim-airline/vim-airline'      " nice status line
 
 " Language Syntax
-Plug 'elixir-editors/vim-elixir'
-Plug 'leafgarland/typescript-vim'
-Plug 'peitalin/vim-jsx-typescript'
-Plug 'slim-template/vim-slim'       " slim syntax highlighting
-Plug 'hashivim/vim-vagrant'         " Vagrant file syntax highligh
-Plug 'tomlion/vim-solidity'         " Solidity language syntax
-Plug 'pangloss/vim-javascript'      " Js highlight and indent (support .es6 extention)
-Plug 'chemzqm/vim-jsx-improve', { 'for': 'javascript' } " jsx syntax
-Plug 'jparise/vim-graphql'           " GraphQL
+Plug 'sheerun/vim-polyglot'
+Plug 'ap/vim-css-color'
+Plug 'AndrewRadev/splitjoin.vim'    " multiline to single line block
 
-" General syntax
-Plug 'tpope/vim-surround'           " working with ",), ]
-Plug 'tpope/vim-unimpaired'         " shotcuts with [,]
-Plug 'tpope/vim-endwise'            " auto 'end' adding
-Plug 'Raimondi/delimitMate'         " automatic closing of quotes, parenthesis, brackets, etc.
-Plug 'jiangmiao/auto-pairs'          " paired [({})]
+" General
+Plug 'tpope/vim-surround'               " working with ',",), ]
+Plug 'tpope/vim-unimpaired'             " shotcuts with [,]
+" Plug 'tpope/vim-endwise'              " auto 'end' adding
+Plug 'Raimondi/delimitMate'             " automatic closing of quotes, parenthesis, brackets, etc.
+Plug 'jiangmiao/auto-pairs'             " paired [({})]
+Plug 'michaeljsmith/vim-indent-object'  " add indent commands to objects
+Plug 'mbbill/undotree'                  " smart undo
+" Plug 'ludovicchabant/vim-gutentags'   " ctags
 
 " Search
-Plug 'ctrlpvim/ctrlp.vim'           " ctrl-p file search
-Plug 'gorkunov/smartgf.vim'         " lookup methods
-Plug 'tpope/vim-bundler'            " For auto tags generating (gem-ctags is needeed)
 Plug 'junegunn/fzf.vim'
-Plug 'dyng/ctrlsf.vim'              " search in files
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy search file
+Plug 'pbogut/fzf-mru.vim'
+" Plug 'dyng/ctrlsf.vim'              " search in files
 
-" Archive
-" Plug 'benmills/vimux'               " tmux for vim
-" Plug 'scrooloose/syntastic'        " syntax checker
-" Plug 'tpope/vim-liquid'             " shopify templates
 call plug#end()
-
-
 
 
 " General {{
@@ -74,6 +81,8 @@ call plug#end()
   set nowb
   set noswapfile
   set nocompatible
+  " do not show '-- INSERT --' on separate line
+  set noshowmode
 
   set hidden " navigate from chaged buffer
 
@@ -111,8 +120,13 @@ call plug#end()
   filetype on                  " Enable filetype detection
   filetype indent plugin on    " Enable filetype-specific indenting
 
-  set foldmethod=syntax       " zc - close fold, zC close all folds, l open fold, zR open old folds
+  " set foldmethod=syntax       " zc - close fold, zC close all folds, l open fold, zR open old folds
+  set foldmethod=indent
   set foldlevel=100           " inititialy all folds are opened
+
+  " https://github.com/vim/vim/blob/master/runtime/doc/russian.txt
+  " Enable hotkeys for Russian layout
+  set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯ;ABCDEFGHIJKLMNOPQRSTUVWXYZ,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz
 " }}}
 
 " Formatting {
@@ -170,11 +184,13 @@ call plug#end()
 "nnoremap <BS> gg
 nnoremap <BS> h<Del>
 "nnoremap <S-BS> 0<D>
+map q <Nop>
 
 " Stop cursor from jumping over wrapped lines
 nnoremap j gj
 nnoremap k gk
 
+nnoremap ee :e<CR>
 
 let mapleader="\<SPACE>"
 " copy filepath
@@ -189,11 +205,12 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
   " Colorscheme options.
   " colorscheme gruvbox
-  colorscheme jellybeans
-  let g:jellybeans_overrides = {
-  \    'background': { 'guibg': '000000' },
-  \}
+  silent! colorscheme jellybeans
+  " colorscheme nord
+  " black background for blurred iterm
+  let g:jellybeans_overrides = { 'background': { 'guibg': '000000' } }
   syntax enable
+  "set background=light
 
   " ================ Persistent Undo ==================
   " Keep undo history across sessions, by storing in file.
@@ -211,7 +228,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
       " Broken down into easily includeable segments
       set statusline=%<%f\                     " Filename
       set statusline+=%w%h%m%r                 " Options
-      "set statusline+=%{fugitive#statusline()} " Git Hotness
+      " set statusline+=%{FugitiveStatusline()} " Git
       set statusline+=\ [%{&ff}/%Y]            " Filetype
       set statusline+=\ [%{getcwd()}]          " Current dir
       set statusline+=%=%-14.(%l,%c%V%)\ %p%%  " Right aligned file nav info
@@ -221,9 +238,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
 " Keybindings {
   " Save file
-  nnoremap <Leader>t :tabnew<CR>
-  "nnoremap <Leader>w :tabclose<CR>
-
+  nmap <silent> <leader><C-t> :tabnew<CR>
   nmap <Leader>w :bd<CR>
 
   " return to normal mode by jj
@@ -235,22 +250,18 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   map <C-l> <C-w><Right>
   map <C-h> <C-w><Left>
 
-  " Switch off arrows
-  for prefix in ['i', 'n', 'v']
-    for key in ['<Up>', '<Down>', '<Left>', '<Right>']
-      exe prefix . "noremap " . key . " <Nop>"
-    endfor
-  endfor
+  " " Switch off arrows
+  " for prefix in ['i', 'n', 'v']
+    " for key in ['<Up>', '<Down>', '<Left>', '<Right>']
+      " exe prefix . "noremap " . key . " <Nop>"
+    " endfor
+  " endfor
 
   map <F9> :e! ~/.vimrc<Enter>
   map <F5> :so  ~/.vimrc<Enter>
 
   " select all
   nmap <Leader>a ggVG
-
-  " upper/lower word
-  " nmap <leader>u mQviwU`Q
-  " nmap <leader>l mQviwu`Q
 
   " Allow to copy/paste between VIM instances
   " copy the current visual selection to ~/.vbuf
@@ -259,8 +270,8 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   nmap <Leader>y :.w! ~/.vbuf<CR>
   " paste the contents of the buffer file
   nmap <Leader>p :r ~/.vbuf<CR>
-  " print vbuf to terminal (for copy-paste)
-  nmap <Leader>P :!cat ~/.vbuf<CR>
+  " " print vbuf to terminal (for copy-paste)
+  " nmap <Leader>P :!cat ~/.vbuf<CR>
 
   nmap <Leader>9 :Gstatus<CR>
 
@@ -303,7 +314,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
     let g:airline_left_alt_sep = ''
     let g:airline_right_sep = ''
     let g:airline_right_alt_sep = ''
-    let g:airline_theme= 'gruvbox'
+    " let g:airline_theme= 'gruvbox'
   " }
 
   " NERD TREE {
@@ -312,124 +323,100 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
     let g:NERDSpaceDelims = 1
   " }
 
-  " Ctrl {
-    " Open file menu
-    "nnoremap <Leader>n :CtrlP<CR>
-    "let g:ctrlp_map = '<Leader>n'
-    " Open buffer menu
-    nnoremap <Leader>b :CtrlPBuffer<CR>
-    " Open most recently used files
-    nnoremap <Leader>e :CtrlPMRUFiles<CR>
-    " ctags panel
-    nnoremap <leader>. :CtrlPTag<cr>
-
-    let g:ctrlp_working_path_mode = 0
-    let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git'
-  " }
-
   " GitGutter {
     nmap <leader>hu <Plug>(GitGutterUndoHunk)
   " }
 
-  " Git {
+  " Gitv {
     nmap <leader>gv :Gitv --all<cr>
     nmap <leader>gV :Gitv! --all<cr>
-    vmap <leader>gV :Gitv! --all<cr>
+    vmap <leader>gV :'<,'>Gitv!<CR>
+
+    let g:Gitv_DoNotMapCtrlKey = 1
+    let g:Gitv_OpenHorizontal = 1
+    let g:Gitv_TruncateCommitSubjects = 1
+    let g:Gitv_CommitStep = 100
   " }
-
-  let g:Gitv_DoNotMapCtrlKey = 1
-  "let g:Gitv_OpenPreviewOnLaunch = 0
-  let g:Gitv_OpenHorizontal = 1
-  let g:Gitv_TruncateCommitSubjects = 1
-  let g:Gitv_CommitStep = 100
-
-  " let g:auto_save = 1
-  " let g:auto_save_silent = 1
 
   " vim test
   let g:test#ruby#minitest#executable = 'rspec'
-  nmap <silent> <leader>T :TestNearest<CR>
-  nmap <silent> <leader><C-t> :TestFile<CR>
+  nmap <silent> <leader>t :TestNearest<CR>
+  nmap <silent> <leader>T :TestFile<CR>
   nmap <silent> <leader>l :TestLast<CR>
 
   " make test commands execute using dispatch.vim
   let test#strategy = "basic"
-  "let test#ruby#rspec#executable = 'heroku local:run -e .env.test bundle exec rspec'
 
-  " fzf setup
+  " FZF setup
   nmap <leader><tab> <plug>(fzf-maps-n)
   xmap <leader><tab> <plug>(fzf-maps-x)
   omap <leader><tab> <plug>(fzf-maps-o)
 
-  nmap <Leader>n :FZF<CR>
-  " install fd to use .gitignore
+  " Open buffer
+  nnoremap <Leader>b :Buffers<CR>
+  " Open file
+  nnoremap <Leader>n :Files<CR>
+  nnoremap <Leader>g :BTags<CR>
+  nnoremap <Leader>G :Tags<CR>
+  nnoremap <Leader>f :Rg<space>
+  nnoremap <Leader>F :Rg <C-R><C-W><CR>
+  nnoremap <Leader>q :Helptags<CR>
 
 
-  " ctrlsf params
-  let g:ctrlsf_default_view_mode = 'compact'
-  let g:ctrlsf_ignore_dir = ['public', 'node_modules']
+  " FZF Mru
+  " use current directory MRU
+  let g:fzf_mru_relative = 1
+  " Open recent file
+  nnoremap <Leader>e :FZFMru<CR>
 
-  nmap     <C-A>f <Plug>CtrlSFPrompt
-  vmap     <C-A>f <Plug>CtrlSFVwordPath
-  vmap     <C-A>F <Plug>CtrlSFVwordExec
-  nmap     <C-A>N <Plug>CtrlSFCwordPath
-  nmap     <C-A>n <Plug>CtrlSFCwordExec
-  nmap     <C-A>p <Plug>CtrlSFPwordPath
-  nnoremap <C-A>o :CtrlSFOpen<CR>
-  nnoremap <C-A>t :CtrlSFToggle<CR>
-  inoremap <C-A>t <Esc>:CtrlSFToggle<CR>
-" }}}
 
-  " Ale
-  let g:ale_completion_enabled = 0
-  let g:ale_fix_on_save = 1
-  let g:ale_linters = {}
-  let g:ale_linters.scss = ['stylelint']
-  let g:ale_linters.css = ['stylelint']
-  let g:ale_linters.javascript = ['eslint']
-  let g:ale_linters.elixir = []
+  " " ctrlsf params
+  " let g:ctrlsf_default_view_mode = 'compact'
+  " let g:ctrlsf_ignore_dir = ['public', 'node_modules']
 
-  let g:ale_fixers = {}
-  let g:ale_fixers.javascript = ['prettier']
-  let g:ale_fixers.typescript = ['tslint']
-  let g:ale_fixers.scss = ['stylelint']
-  let g:ale_fixers.css = ['prettier']
-  let g:ale_fixers.ruby = ['rubocop']
-  let g:ale_fixers.elixir = ['mix_format']
-
-  let g:ale_linter_aliases = {'typescriptreact': 'typescript'}
-
+  " nmap     <C-A>f <Plug>CtrlSFPrompt
+  " vmap     <C-A>f <Plug>CtrlSFVwordPath
+  " vmap     <C-A>F <Plug>CtrlSFVwordExec
+  " nmap     <C-A>N <Plug>CtrlSFCwordPath
+  " nmap     <C-A>n <Plug>CtrlSFCwordExec
+  " nmap     <C-A>p <Plug>CtrlSFPwordPath
+  " nnoremap <C-A>o :CtrlSFOpen<CR>
+  " nnoremap <C-A>t :CtrlSFToggle<CR>
+  " inoremap <C-A>t <Esc>:CtrlSFToggle<CR>
+" " }}}
 
 " Commands {{{
 
   " save automatically when text is changed
   au CursorHold,CursorHoldI * silent! update
 
-  "command! MakeTags !ctags -R -f ./.git/tags .
-  command! MakeTags !ctags -R --languages=ruby --exclude=.git --exclude=log . $(bundle list --paths)
+  " command! MakeTags !ctags -R --languages=ruby --exclude=.git --exclude=log . $(bundle list --paths)
 
   autocmd FileType javascript set formatprg=prettier\ --stdin
 
+    " " bind K to grep word under cursor
+    " nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
 
-  " Remove trailing spaces before saving text files
-  " http://vim.wikia.com/wiki/Remove_trailing_spaces
-  autocmd BufWritePre * :call StripTrailingWhitespace()
-  function! StripTrailingWhitespace()
-    if !&binary && &filetype != 'diff'
-      normal mz
-      normal Hmy
-      if &filetype == 'mail'
-    " Preserve space after e-mail signature separator
-        %s/\(^--\)\@<!\s\+$//e
-      else
-        %s/\s\+$//e
-      endif
-      normal 'yz<Enter>
-      normal `z
-    endif
-  endfunction
+  " }}}
 
-  "
+  " " Remove trailing spaces before saving text files
+  " " http://vim.wikia.com/wiki/Remove_trailing_spaces
+  " autocmd BufWritePre * :call StripTrailingWhitespace()
+  " function! StripTrailingWhitespace()
+    " if !&binary && &filetype != 'diff'
+      " normal mz
+      " normal Hmy
+      " if &filetype == 'mail'
+    " " Preserve space after e-mail signature separator
+        " %s/\(^--\)\@<!\s\+$//e
+      " else
+        " %s/\s\+$//e
+      " endif
+      " normal 'yz<Enter>
+      " normal `z
+    " endif
+  " endfunction
+
   " Repurpose arrow keys to move lines {{{
     function! s:MoveLineUp()
       call <SID>MoveLineOrVisualUp(".", "")
@@ -503,4 +490,57 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
 " }}}
 
+
+" UndoTree {
+nnoremap <F3> :UndotreeToggle<cr>
+
+" }
+
+" COC {
+let g:coc_node_path="/Users/chuvayva/.asdf/installs/nodejs/10.15.3/bin/node"
+
+" nmap <silent> gd <Plug>(coc-definition)
+" nmap <silent> gr <Plug>(coc-references)
+nmap <silent> <leader>d <Plug>(coc-definition)
+nmap <silent> <leader>r <Plug>(coc-references)
+nmap <silent> <leader>i <Plug>(coc-implementation)
+nmap <silent> qr <Plug>(coc-rename)
+nmap <silent> qf <Plug>(coc-refactor)
+
+" Use `[d` and `]d` to navigate diagnostics
+nmap <silent> [d <Plug>(coc-diagnostic-prev)
+nmap <silent> ]d <Plug>(coc-diagnostic-next)
+
+" Comments in json
+autocmd FileType json syntax match Comment +\/\/.\+$+
+
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
+nmap <silent> ff :Format<CR>
+
+" Use `:Fold` to fold current buffer
+command! -nargs=? Fold :call CocAction('fold', <f-args>)
+
+let g:coc_snippet_next = '<tab>'
+
+" Use <C-l> for trigger snippet expand.
+imap <C-l> <Plug>(coc-snippets-expand)
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
+" Use <C-j> for both expand and jump (make expand higher priority.)
+imap <C-j> <Plug>(coc-snippets-expand-jump)
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" " { Ctags
+  " let g:gutentags_ctags_tagfile = '.git/tags'
+  " " [Tags] Command to generate tags file
+  " let g:fzf_tags_command = 'ctags -R -f .git/tags --output-format=json --languages=ruby --exclude=.git --exclude=log .'
+" " }
+
+" nnoremap <silent> <Leader>ag :Ag <C-R><C-W><CR>
 

@@ -1,0 +1,17 @@
+{
+  "elixir.pathToElixirLS": "/Users/chuvayva/Documents/Dev/lsp/elixir-ls/release/language_server.sh",
+  "list.insertMappings": {
+    "<C-c>": "do:exit"
+  },
+  "list.normalMappings": {
+    "<C-c>": "do:exit"
+  },
+  "suggest.maxCompleteItemCount" : 15,
+  "suggest.noselect": false,
+  "prettier.eslintIntegration": true,
+  "coc.preferences.formatOnSaveFiletypes": ["css", "Markdown", "javascript", "html", "scss", "ruby"],
+  "solargraph.diagnostics": true,
+  "solargraph.autoformat": true,
+  "solargraph.formatting": true
+}
+

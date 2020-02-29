@@ -27,12 +27,15 @@ let g:coc_global_extensions = [
       \ 'coc-diagnostic',
       \ 'coc-snippets',
       \ 'coc-tabnine',
+      \ 'coc-omnisharp',
       \]
 
 " Git
-Plug 'tpope/vim-fugitive'           " git tool
-Plug 'airblade/vim-gitgutter'       " git signs
-Plug 'gregsexton/gitv'              " git tree and history
+Plug 'tpope/vim-fugitive'             " git tool
+Plug 'tpope/vim-rhubarb'              " github Gbrowse command
+Plug 'shumphrey/fugitive-gitlab.vim'  " gitlab Gbrowse command
+Plug 'airblade/vim-gitgutter'         " git signs
+Plug 'gregsexton/gitv'                " git tree and history
 
 " UI, Themes
 Plug 'Yggdroot/indentLine'
@@ -45,6 +48,8 @@ Plug 'vim-airline/vim-airline'      " nice status line
 Plug 'sheerun/vim-polyglot'
 Plug 'ap/vim-css-color'
 Plug 'AndrewRadev/splitjoin.vim'    " multiline to single line block
+Plug 'amadeus/vim-mjml'
+Plug 'OrangeT/vim-csharp'
 
 " General
 Plug 'tpope/vim-surround'               " working with ',",), ]
@@ -61,8 +66,10 @@ Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy search file
 Plug 'pbogut/fzf-mru.vim'
 " Plug 'dyng/ctrlsf.vim'              " search in files
+Plug 'parkr/vim-jekyll'               " plugin for jekyll static site engine
 
 call plug#end()
+
 
 
 " General {{
@@ -120,7 +127,6 @@ call plug#end()
   filetype on                  " Enable filetype detection
   filetype indent plugin on    " Enable filetype-specific indenting
 
-  " set foldmethod=syntax       " zc - close fold, zC close all folds, l open fold, zR open old folds
   set foldmethod=indent
   set foldlevel=100           " inititialy all folds are opened
 
@@ -164,6 +170,8 @@ call plug#end()
   set nowrap              " switch text wrapping off
   set synmaxcol=170       " fix slow vim with long lines
   set noeol               " don't play with a file's end
+
+  " set regexpengine=1      " speed up by reverting regexp engine
 
   " {
     " Tell Vim which characters to show for expanded TABs,
@@ -340,6 +348,8 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
   " vim test
   let g:test#ruby#minitest#executable = 'rspec'
+  let test#javascript#lab#file_pattern = '\v(spec|test)/.*\.(js|tsx)$'
+
   nmap <silent> <leader>t :TestNearest<CR>
   nmap <silent> <leader>T :TestFile<CR>
   nmap <silent> <leader>l :TestLast<CR>
@@ -348,16 +358,20 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   let test#strategy = "basic"
 
   " FZF setup
-  nmap <leader><tab> <plug>(fzf-maps-n)
-  xmap <leader><tab> <plug>(fzf-maps-x)
-  omap <leader><tab> <plug>(fzf-maps-o)
+  command! -bang -nargs=? -complete=dir Files
+    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+  command! -bang -nargs=* Rg
+    \ call fzf#vim#grep(
+    \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+    \   <bang>0 ? fzf#vim#with_preview('up:60%')
+    \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+    \   <bang>0)
 
   " Open buffer
   nnoremap <Leader>b :Buffers<CR>
   " Open file
   nnoremap <Leader>n :Files<CR>
-  nnoremap <Leader>g :BTags<CR>
-  nnoremap <Leader>G :Tags<CR>
   nnoremap <Leader>f :Rg<space>
   nnoremap <Leader>F :Rg <C-R><C-W><CR>
   nnoremap <Leader>q :Helptags<CR>
@@ -367,8 +381,9 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
   " use current directory MRU
   let g:fzf_mru_relative = 1
   " Open recent file
-  nnoremap <Leader>e :FZFMru<CR>
+  nnoremap <Leader>e :FZFFreshMru<CR>
 
+  noremap <Leader>v :GFiles --exclude-standard --others --modified<CR>
 
   " " ctrlsf params
   " let g:ctrlsf_default_view_mode = 'compact'
@@ -392,7 +407,7 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 
   " command! MakeTags !ctags -R --languages=ruby --exclude=.git --exclude=log . $(bundle list --paths)
 
-  autocmd FileType javascript set formatprg=prettier\ --stdin
+  " autocmd FileType javascript set formatprg=prettier\ --stdin
 
     " " bind K to grep word under cursor
     " nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
@@ -506,6 +521,7 @@ nmap <silent> <leader>r <Plug>(coc-references)
 nmap <silent> <leader>i <Plug>(coc-implementation)
 nmap <silent> qr <Plug>(coc-rename)
 nmap <silent> qf <Plug>(coc-refactor)
+nmap <silent> qc <Plug>(coc-fix-current)
 
 " Use `[d` and `]d` to navigate diagnostics
 nmap <silent> [d <Plug>(coc-diagnostic-prev)

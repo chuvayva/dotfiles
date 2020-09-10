@@ -6,7 +6,6 @@ Plug 'janko-m/vim-test'             " test plugin
 Plug 'joequery/Stupid-EasyMotion'   " moving in the line
 Plug 'vim-scripts/BufOnly.vim'      " close all buffers
 Plug 'scrooloose/nerdcommenter'     " comment text
-" Plug 'itchyny/vim-cursorword'       " just select word under cursor
 Plug 'neoclide/coc.nvim', {'branch': 'release'} " autocomplete, linters, fixers, lsp, tabnine
 let g:coc_global_extensions = [
       \ 'coc-tsserver',
@@ -28,6 +27,8 @@ let g:coc_global_extensions = [
       \ 'coc-snippets',
       \ 'coc-tabnine',
       \ 'coc-omnisharp',
+      \ 'coc-cspell-dicts',
+      \ 'coc-spell-checker',
       \]
 
 " Git
@@ -54,7 +55,6 @@ Plug 'OrangeT/vim-csharp'
 " General
 Plug 'tpope/vim-surround'               " working with ',",), ]
 Plug 'tpope/vim-unimpaired'             " shotcuts with [,]
-" Plug 'tpope/vim-endwise'              " auto 'end' adding
 Plug 'Raimondi/delimitMate'             " automatic closing of quotes, parenthesis, brackets, etc.
 Plug 'jiangmiao/auto-pairs'             " paired [({})]
 Plug 'michaeljsmith/vim-indent-object'  " add indent commands to objects
@@ -141,7 +141,7 @@ call plug#end()
   set showmode            " Show current mode.
   set ruler               " Show the line and column numbers of the cursor.
   set number              " Show the line numbers on the left side.
-  set rnu               " Relative numbers
+  set rnu                 " Relative numbers
   set formatoptions+=o    " Continue comment marker in new lines.
   set textwidth=0         " Hard-wrap long lines as you type them.
   set expandtab           " Insert spaces when TAB is pressed.
